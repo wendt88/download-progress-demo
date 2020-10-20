@@ -4,8 +4,13 @@
             <Label text="Home"/>
         </ActionBar>
 
-        <GridLayout>
+        <GridLayout rows="auto, *">
             <Button text="download" @tap="download" />
+            <ListView for="log in logs" row="1">
+                <v-template>
+                    <Label :text="log" />
+                </v-template>
+            </ListView>
         </GridLayout>
     </Page>
 </template>
@@ -15,6 +20,11 @@ import * as fs from '@nativescript/core/file-system';
 import { DownloadProgress } from 'nativescript-download-progress';
 
 export default {
+    data () {
+        return {
+            logs: []
+        }
+    },
     methods: {
         async download () {
             try {
@@ -31,17 +41,17 @@ export default {
                         fs.path.join(folder.path, i + '.jpeg')
                     )
                         .then(f => {
-                            console.log(`Success file ${i}:`, f);
+                            this.logs.push(`Success file ${i}: ${f.name}`);
                         })
                         .catch(e => {
-                            console.log(`Error file ${i}:`, e);
+                            this.logs.push(`Error file ${i}: ${e.message}`);
                         })
                 }
             }
             catch (e) {
-                console.error(e);
+                this.logs.push(`Error: ${e.message}`);
             }
-            console.log('Finish!');
+            this.logs.push('Finish!');
         }
     }
 };
